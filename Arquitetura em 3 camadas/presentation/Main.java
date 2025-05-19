@@ -10,20 +10,19 @@ import business.service.DisciplinaService;
 public class Main {
 	public static void main(String[] args) {
 
+		
 		EstudanteRepository estudanteRepository = new EstudanteRepository();
-		DisciplinaRepository disciplinaRepository = new DisciplinaRepository(estudanteRepository);
-
-		// Criando services
 		EstudanteService estudanteService = new EstudanteService(estudanteRepository);
+		
+		DisciplinaRepository disciplinaRepository = new DisciplinaRepository(estudanteService);
 		DisciplinaService disciplinaService = new DisciplinaService(disciplinaRepository);
 
-		// Criando controllers
+		// Controllers
 		EstudanteController estudanteController = new EstudanteController(estudanteService);
 		DisciplinaController disciplinaController = new DisciplinaController(disciplinaService, estudanteService);
 
-		// Executando menu principal
+		// Menu
 		Menu menu = new Menu(estudanteController, disciplinaController);
 		menu.exibirMenu();
 	}
-
 }

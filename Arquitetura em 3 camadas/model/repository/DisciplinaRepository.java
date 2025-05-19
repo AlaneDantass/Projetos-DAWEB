@@ -1,17 +1,19 @@
 package model.repository;
 
 import java.util.ArrayList;
+
+import business.service.EstudanteService;
 import model.entity.Estudante;
 import model.entity.Disciplina;
 
 public class DisciplinaRepository {
 	private ArrayList<Disciplina> disciplinas = new ArrayList<>();
-	private EstudanteRepository estudanteReposity;
-
-	public DisciplinaRepository(EstudanteRepository estudanteReposity) {
-		this.estudanteReposity = estudanteReposity;
+	private EstudanteService estudanteService;
+	
+	public DisciplinaRepository(EstudanteService estudanteService) {
+	    this.estudanteService = estudanteService;
 	}
-
+	
 	public void cadastrarDisciplina(Disciplina disciplina) {
 		disciplinas.add(disciplina);
 	}
@@ -20,13 +22,16 @@ public class DisciplinaRepository {
 		Disciplina disciplinaEncontrada = encontraPeloCod(codDisciplina);
 
 		Estudante estudanteParaMatricular = null;
-		for (Estudante e : estudanteReposity.todosEstudantes()) {
+		for (Estudante e : estudanteService.listarTodosEstudantes()) {
 			if (e.getMatricula() == matriculaAluno) {
 				estudanteParaMatricular = e;
 				break;
 			}
+			if (disciplinaEncontrada != null && estudanteParaMatricular != null) {
+				disciplinaEncontrada.getEstudanteDisciplina().add(estudanteParaMatricular);
+
+			}
 		}
-		disciplinaEncontrada.getEstudanteDisciplina().add(estudanteParaMatricular);
 	}
 
 	public ArrayList<Disciplina> getDisciplinas() {
