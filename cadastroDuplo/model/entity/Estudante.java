@@ -5,15 +5,11 @@ public class Estudante {
 	private int matricula;
 	private String nomeEstudante;
 	private String curso;
-	private int ano;
-	private String email;
 
-	public Estudante(int matricula, String nomeEstudante, String curso, int ano, String email) {
+	public Estudante(int matricula, String nomeEstudante, String curso) {
 		this.matricula = matricula;
 		this.nomeEstudante = nomeEstudante;
 		this.curso = curso;
-		this.ano = ano;
-		this.email = email;
 	}
 
 	public int getMatricula() {
@@ -40,26 +36,9 @@ public class Estudante {
 		this.curso = curso;
 	}
 
-	public int getAno() {
-		return ano;
-	}
-
-	public void setAno(int ano) {
-		this.ano = ano;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
 	@Override
 	public String toString() {
-		return "Matricula: " + matricula + ", Nome: " + nomeEstudante + ", Curso: " + curso + ", Ano: " + ano
-				+ ", Email: " + email;
+		return "Matricula: " + matricula + ", Nome: " + nomeEstudante + ", Curso: " + curso;
 	}
 
 }

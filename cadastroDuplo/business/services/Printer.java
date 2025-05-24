@@ -1,9 +1,6 @@
-package business.utils;
+package business.services;
 
 public class Printer {
-
-//	Classe de impressão para facilitar caso seja necessário alterar a forma de impressão
-
 	public static void print(String message) {
 		System.out.println(message);
 	}
