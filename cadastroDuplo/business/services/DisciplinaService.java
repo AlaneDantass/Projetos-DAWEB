@@ -42,8 +42,6 @@ public class DisciplinaService {
             );
 
             List<EstudanteDTO> estudanteDTOsMatriculados = new ArrayList<>();
-            // Lembre-se que a entidade Disciplina deve inicializar sua lista de estudantes
-            // em seu construtor: this.estudantes = new ArrayList<>();
             if (disciplinaEntity.getEstudanteDisciplina() != null) {
                 for (Estudante estudanteEntity : disciplinaEntity.getEstudanteDisciplina()) {
                     estudanteDTOsMatriculados.add(new EstudanteDTO(
@@ -59,10 +57,6 @@ public class DisciplinaService {
         return disciplinaDTOs;
     }
 
-    /**
-     * CORREÇÃO: Encontra uma disciplina pelo código e a retorna como um DTO.
-     * Nome antigo: encontrarPeloCod
-     */
     public DisciplinaDTO encontrarDisciplinaDTOPeloCod(int codDisciplina) {
         Disciplina disciplinaEntity = disciplinaRepository.encontraPeloCod(codDisciplina);
         if (disciplinaEntity != null) {

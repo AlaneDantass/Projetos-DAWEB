@@ -6,6 +6,7 @@ import java.util.List; // Usar a interface List
 import business.dto.DisciplinaDTO;
 
 import business.services.DisciplinaService;
+import business.services.Printer;
 import business.services.Validation;
 
 public class DisciplinaController {
@@ -32,10 +33,22 @@ public class DisciplinaController {
      * CORREÇÃO: Retorna uma lista de todas as disciplinas como DTOs.
      * Nome antigo: listarDisciplinas (que era void)
      */
-    public List<DisciplinaDTO> getTodasDisciplinasDTO() {
+//    public void listarDisciplinas(){
+//    	 List<DisciplinaDTO> lista = disciplinaService.listarTodasDisciplinasDTO();
+//
+//        if (lista.isEmpty()) {
+//            Printer.print("Nenhuma disciplina cadastrada.");
+//        } else {
+//            for (DisciplinaDTO d : lista) {
+//                Printer.print("\n-" + d.getNomeDisciplina()); 
+//            }
+//        }
+//    }
+    
+    public List<DisciplinaDTO> getTodasDisciplinasComEstudantesDTO() { 
         return disciplinaService.listarTodasDisciplinasDTO();
     }
-
+    
     public boolean atualizaDisciplina(int codAtual, String nomeAtual, String professorAtual) {
         if (disciplinaValidacao.disciplinaValida(codAtual, nomeAtual, professorAtual)) {
             return disciplinaService.atualizaDisciplina(codAtual, nomeAtual, professorAtual);
