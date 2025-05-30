@@ -1,4 +1,4 @@
-package presentation.dto;
+package business.dto;
 public class EstudanteDTO {
     private int matricula;
     private String nomeEstudante;

@@ -1,55 +1,83 @@
 package business.services;
-import java.util.ArrayList;
 
-import model.entity.Disciplina;
+import java.util.ArrayList;
+import java.util.List; // Usar a interface List
+
+// CORREÇÃO: Importar DTOs do pacote correto (business.dto como preferido)
+import business.dto.EstudanteDTO;
+
 import model.entity.Estudante;
 import model.repository.DisciplinaRepository;
 import model.repository.EstudanteRepository;
 
-
 public class EstudanteService {
-	private EstudanteRepository repository = new EstudanteRepository();
-	private DisciplinaRepository disciplinaRepository = new DisciplinaRepository();
-	
-	
-	/*
-	public ArrayList<Estudante> todosEstudante() {
-	    // ❌ Erro: este método deveria retornar todos os estudantes,
-	    // mas tá retornando apenas o estudante com matrícula 0 (ou null).
-	    // Isso não cumpre a função esperada do método. (basicamente não tem como passar o dado de matrícula de cada aluno
-	    return repository.encontraPelaMatricula(0);
-	}
-	*/
-	public ArrayList<Estudante> listarTodosEstudantes() {
-        return repository.getEstudantes();
+
+    // CORREÇÃO: Repositórios agora são injetados via construtor
+    private EstudanteRepository estudanteRepository;
+    private DisciplinaRepository disciplinaRepository;
+
+    // CORREÇÃO: Construtor para injeção de dependência dos repositórios
+    public EstudanteService(EstudanteRepository estudanteRepository, DisciplinaRepository disciplinaRepository) {
+        this.estudanteRepository = estudanteRepository;
+        this.disciplinaRepository = disciplinaRepository;
     }
 
-	 public EstudanteService(EstudanteRepository repository) {
-	        this.repository = repository;
-	    }
-	 
-	public void cadastrarEstudante(int matricula, String nomeEstudante, String curso) {
-		Estudante estudante = new Estudante(matricula, nomeEstudante, curso);
-		repository.cadastrarEstudante(estudante);
-	}
-	
+    /**
+     * CORREÇÃO: Retorna uma lista de todos os estudantes como DTOs.
+     * Nome antigo: listarTodosEstudantes
+     */
+    public List<EstudanteDTO> listarTodosEstudantesDTO() {
+        List<Estudante> estudantesEntities = estudanteRepository.getEstudantes();
+        List<EstudanteDTO> estudanteDTOs = new ArrayList<>();
+        if (estudantesEntities == null) {
+            return estudanteDTOs; // Retorna lista vazia se o repositório retornar null
+        }
 
-	 public boolean atualizaEstudante(int matricula, String novoNome, String novoCurso) {	       
-	        return repository.atualizarEstudante(matricula, novoNome, novoCurso);
-	    }
-	
-	public boolean removerEstudante(int matricula) {
-        Estudante existente = repository.encontraPelaMatricula(matricula);
+        for (Estudante estudanteEntity : estudantesEntities) {
+            estudanteDTOs.add(new EstudanteDTO(
+                estudanteEntity.getMatricula(),
+                estudanteEntity.getNomeEstudante(),
+                estudanteEntity.getCurso()
+            ));
+        }
+        return estudanteDTOs;
+    }
+
+    /**
+     * CORREÇÃO: Encontra um estudante pela matrícula e o retorna como um DTO.
+     * Nome antigo: encontrarPelaMatricula
+     */
+    public EstudanteDTO encontrarEstudanteDTOPelaMatricula(int matricula) {
+        Estudante estudanteEntity = estudanteRepository.encontraPelaMatricula(matricula);
+        if (estudanteEntity != null) {
+            return new EstudanteDTO(
+                estudanteEntity.getMatricula(),
+                estudanteEntity.getNomeEstudante(),
+                estudanteEntity.getCurso()
+            );
+        }
+        return null;
+    }
+
+    public void cadastrarEstudante(int matricula, String nomeEstudante, String curso) {
+        Estudante estudante = new Estudante(matricula, nomeEstudante, curso);
+        estudanteRepository.cadastrarEstudante(estudante);
+    }
+
+    public boolean atualizaEstudante(int matricula, String novoNome, String novoCurso) {
+        // A lógica de atualização (incluindo a verificação de existência)
+        // agora está corretamente no repositório (com a correção do NPE)
+        return estudanteRepository.atualizarEstudante(matricula, novoNome, novoCurso);
+    }
+
+    public boolean removerEstudante(int matricula) {
+        Estudante existente = estudanteRepository.encontraPelaMatricula(matricula);
         if (existente != null) {
-            repository.deletarEstudantePelaMatricula(matricula);
+            estudanteRepository.deletarEstudantePelaMatricula(matricula);
+            // Esta linha agora usa o disciplinaRepository injetado e compartilhado
             disciplinaRepository.deletarEstudantePelaMatricula(matricula);
-            
             return true;
         }
         return false;
-    }
-	
-	public Estudante encontrarPelaMatricula(int matricula) {
-        return repository.encontraPelaMatricula(matricula);
     }
 }
