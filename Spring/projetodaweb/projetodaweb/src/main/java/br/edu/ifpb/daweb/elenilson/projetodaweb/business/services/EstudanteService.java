@@ -27,7 +27,7 @@ public class EstudanteService {
      * Nome antigo: listarTodosEstudantes
      */
     public List<EstudanteDTO> listarTodosEstudantesDTO() {
-        List<Estudante> estudantesEntities = estudanteRepository.getEstudantes();
+        List<Estudante> estudantesEntities = estudanteRepository.findAll();
         List<EstudanteDTO> estudanteDTOs = new ArrayList<>();
         if (estudantesEntities == null) {
             return estudanteDTOs; // Retorna lista vazia se o repositório retornar null
@@ -48,36 +48,36 @@ public class EstudanteService {
      * Nome antigo: encontrarPelaMatricula
      */
     public EstudanteDTO encontrarEstudanteDTOPelaMatricula(int matricula) {
-        Estudante estudanteEntity = estudanteRepository.encontraPelaMatricula(matricula);
-        if (estudanteEntity != null) {
-            return new EstudanteDTO(
-                    estudanteEntity.getMatricula(),
-                    estudanteEntity.getNomeEstudante(),
-                    estudanteEntity.getCurso()
-            );
-        }
+//        Estudante estudanteEntity = estudanteRepository.findByMatricula(matricula);
+//        if (estudanteEntity != null) {
+//            return new EstudanteDTO(
+//                    estudanteEntity.getMatricula(),
+//                    estudanteEntity.getNomeEstudante(),
+//                    estudanteEntity.getCurso()
+//            );
+//        }
         return null;
     }
 
     public void cadastrarEstudante(int matricula, String nomeEstudante, String curso) {
         Estudante estudante = new Estudante(matricula, nomeEstudante, curso);
-        estudanteRepository.cadastrarEstudante(estudante);
+        estudanteRepository.save(estudante);
     }
 
     public boolean atualizaEstudante(int matricula, String novoNome, String novoCurso) {
         // A lógica de atualização (incluindo a verificação de existência)
         // agora está corretamente no repositório (com a correção do NPE)
-        return estudanteRepository.atualizarEstudante(matricula, novoNome, novoCurso);
+        return true;// estudanteRepository. (matricula, novoNome, novoCurso);
     }
 
     public boolean removerEstudante(int matricula) {
-        Estudante existente = estudanteRepository.encontraPelaMatricula(matricula);
-        if (existente != null) {
-            estudanteRepository.deletarEstudantePelaMatricula(matricula);
-            // Esta linha agora usa o disciplinaRepository injetado e compartilhado
-            disciplinaRepository.deletarEstudantePelaMatricula(matricula);
-            return true;
-        }
+//        Estudante existente = estudanteRepository.encontraPelaMatricula(matricula);
+//        if (existente != null) {
+//            estudanteRepository.delete(existente);
+//            // Esta linha agora usa o disciplinaRepository injetado e compartilhado
+////            disciplinaRepository.deletarEstudantePelaMatricula(matricula);
+//            return true;
+//        }
         return false;
     }
 }

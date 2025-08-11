@@ -1,9 +1,23 @@
 package br.edu.ifpb.daweb.elenilson.projetodaweb.model.entity;
 
+import jakarta.annotation.Generated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Estudante {
 
-    private int matricula;
+    @Id
+    @GeneratedValue (strategy = GenerationType.AUTO)
+    private Long id;
+    @Column(nullable = false)
+	private int matricula;
+    @Column(nullable = false)
     private String nomeEstudante;
+    @Column(nullable = false)
     private String curso;
 
     public Estudante(int matricula, String nomeEstudante, String curso) {

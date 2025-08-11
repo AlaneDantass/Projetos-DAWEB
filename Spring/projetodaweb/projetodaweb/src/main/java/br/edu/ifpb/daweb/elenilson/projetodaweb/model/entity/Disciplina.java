@@ -2,17 +2,30 @@ package br.edu.ifpb.daweb.elenilson.projetodaweb.model.entity;
 
 import java.util.ArrayList;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 //
 //Source code recreated from a .class file by IntelliJ IDEA
 //(powered by FernFlower decompiler)
 //
 import java.util.ArrayList;
 
+@Entity
 public class Disciplina {
- private int codDisciplina;
- private String nomeDisciplina;
- private String nomeProfessor;
- private ArrayList<Estudante> estudantes;
+	@Id
+	@GeneratedValue (strategy = GenerationType.AUTO)
+	private Long id;
+	@Column(nullable = false)
+	private int codDisciplina;
+	@Column(nullable = false)
+	private String nomeDisciplina;
+	@Column(nullable = false)
+	private String nomeProfessor;
+	private ArrayList<Estudante> estudantes;
 
  public Disciplina(int codDisciplina, String nomeDisciplina, String nomeProfessor) {
      this.codDisciplina = codDisciplina;

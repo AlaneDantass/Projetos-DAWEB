@@ -5,13 +5,26 @@ package br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto;
 //A ideia consiste basicamente em agrupar um conjunto de atributos numa classe simples de forma a otimizar a comunicação.
 
 import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 import java.util.ArrayList;
 
+
 public class DisciplinaDTO {
-  private int codDisciplina;
-  private String nomeDisciplina;
-  private String nomeProfessor;
-  private List<EstudanteDTO> estudantesMatriculados;
+	@Id
+	@GeneratedValue (strategy = GenerationType.AUTO)
+	private Long id;
+    @Column(nullable = false)
+	private int codDisciplina;
+    @Column(nullable = false)
+	private String nomeDisciplina;
+    @Column(nullable = false)
+	private String nomeProfessor;
+	private List<EstudanteDTO> estudantesMatriculados;
 
   public DisciplinaDTO(int codDisciplina, String nomeDisciplina, String nomeProfessor) {
       this.codDisciplina = codDisciplina;
