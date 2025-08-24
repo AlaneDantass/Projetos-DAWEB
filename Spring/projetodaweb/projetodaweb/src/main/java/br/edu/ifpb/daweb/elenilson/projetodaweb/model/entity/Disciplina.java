@@ -8,10 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-//
-//Source code recreated from a .class file by IntelliJ IDEA
-//(powered by FernFlower decompiler)
-//
 import java.util.ArrayList;
 
 @Entity

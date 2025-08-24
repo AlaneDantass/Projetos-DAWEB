@@ -1,5 +1,8 @@
 package br.edu.ifpb.daweb.elenilson.projetodaweb.business.services;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class Printer {
     public static void print(String message) {
         System.out.println(message);

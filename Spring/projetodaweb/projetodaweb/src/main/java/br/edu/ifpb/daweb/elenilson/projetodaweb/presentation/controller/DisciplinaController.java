@@ -2,17 +2,23 @@ package br.edu.ifpb.daweb.elenilson.projetodaweb.presentation.controller;
 
 import java.util.List; // Usar a interface List
 
+
 // CORREÇÃO: Importar DTOs do pacote correto
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.DisciplinaDTO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.DisciplinaService;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.Printer;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.Validation;
 
+@Controller
 public class DisciplinaController {
     // CORREÇÃO: Serviço agora é injetado via construtor
+	@Autowired
     private DisciplinaService disciplinaService;
-    private Validation disciplinaValidacao = new Validation();
+    @Autowired
+    private Validation disciplinaValidacao; //Alteração do new
 
     // CORREÇÃO: Construtor para injeção de dependência
     public DisciplinaController(DisciplinaService disciplinaService) {

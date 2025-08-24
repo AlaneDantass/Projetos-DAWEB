@@ -2,24 +2,28 @@ package br.edu.ifpb.daweb.elenilson.projetodaweb.business.services;
 
 import java.util.ArrayList;
 import java.util.List; // Usar a interface List
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.DisciplinaDTO;
 // CORREÇÃO: Importar DTOs do pacote correto (business.dto como preferido)
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.EstudanteDTO;
-
+import br.edu.ifpb.daweb.elenilson.projetodaweb.model.entity.Disciplina;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.model.entity.Estudante;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.model.repository.DisciplinaRepository;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.model.repository.EstudanteRepository;
 
+@Service
 public class EstudanteService {
 
     // CORREÇÃO: Repositórios agora são injetados via construtor
+	@Autowired
     private EstudanteRepository estudanteRepository;
-    private DisciplinaRepository disciplinaRepository;
-
-    // CORREÇÃO: Construtor para injeção de dependência dos repositórios
+	// CORREÇÃO: Construtor para injeção de dependência dos repositórios
     public EstudanteService(EstudanteRepository estudanteRepository, DisciplinaRepository disciplinaRepository) {
         this.estudanteRepository = estudanteRepository;
-        this.disciplinaRepository = disciplinaRepository;
     }
 
     /**
@@ -48,16 +52,18 @@ public class EstudanteService {
      * Nome antigo: encontrarPelaMatricula
      */
     public EstudanteDTO encontrarEstudanteDTOPelaMatricula(int matricula) {
-//        Estudante estudanteEntity = estudanteRepository.findByMatricula(matricula);
-//        if (estudanteEntity != null) {
-//            return new EstudanteDTO(
-//                    estudanteEntity.getMatricula(),
-//                    estudanteEntity.getNomeEstudante(),
-//                    estudanteEntity.getCurso()
-//            );
-//        }
+          Optional<Estudante> estudanteOpt = estudanteRepository.findByMatricula(matricula); //Tive que declarar o findByMatricula como optional
+          if (estudanteOpt.isPresent()) {
+        	  Estudante estudanteEntity = estudanteOpt.get();
+        	  EstudanteDTO estudanteDTO = new EstudanteDTO(
+        			  estudanteEntity.getMatricula(),
+                      estudanteEntity.getNomeEstudante(),
+                      estudanteEntity.getCurso());
+        	  return estudanteDTO;
+          }
         return null;
     }
+
 
     public void cadastrarEstudante(int matricula, String nomeEstudante, String curso) {
         Estudante estudante = new Estudante(matricula, nomeEstudante, curso);
@@ -65,19 +71,30 @@ public class EstudanteService {
     }
 
     public boolean atualizaEstudante(int matricula, String novoNome, String novoCurso) {
+    	Optional<Estudante> updateOpt = estudanteRepository.findByMatricula(matricula);
+    	if (updateOpt.isPresent()) {
+    		Estudante updateEstudante = updateOpt.get();
+    		updateEstudante.setCurso(novoCurso);
+    		updateEstudante.setNomeEstudante(novoCurso);
+    		
+    		estudanteRepository.save(updateEstudante);
+    		return true;// estudanteRepository. (matricula, novoNome, novoCurso);
+    	}
         // A lógica de atualização (incluindo a verificação de existência)
         // agora está corretamente no repositório (com a correção do NPE)
-        return true;// estudanteRepository. (matricula, novoNome, novoCurso);
+    	return false;
     }
+    
 
     public boolean removerEstudante(int matricula) {
-//        Estudante existente = estudanteRepository.encontraPelaMatricula(matricula);
-//        if (existente != null) {
-//            estudanteRepository.delete(existente);
-//            // Esta linha agora usa o disciplinaRepository injetado e compartilhado
-////            disciplinaRepository.deletarEstudantePelaMatricula(matricula);
+          Optional<Estudante> existenteOpt = estudanteRepository.findByMatricula(matricula);
+          if (existenteOpt.isPresent()) {
+        	  Estudante estudanteEntity = existenteOpt.get();
+              estudanteRepository.delete(estudanteEntity);
+            // Esta linha agora usa o disciplinaRepository injetado e compartilhado
+//            disciplinaRepository.deletarEstudantePelaMatricula(matricula);
 //            return true;
-//        }
+          }
         return false;
     }
 }

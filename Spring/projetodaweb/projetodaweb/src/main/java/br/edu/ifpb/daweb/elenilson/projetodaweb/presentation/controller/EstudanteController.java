@@ -2,14 +2,20 @@ package br.edu.ifpb.daweb.elenilson.projetodaweb.presentation.controller;
 
 
 import java.util.List; // Importar a interface List
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.EstudanteDTO;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.EstudanteService;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.Printer;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.Validation;
 
+@Controller
 public class EstudanteController {
 
-    private Validation validation = new Validation();
+	@Autowired
+    private Validation validation; //Alteração do new
+	@Autowired
     private EstudanteService estudanteService; // Serviço será injetado
 
     public EstudanteController(EstudanteService estudanteService) {

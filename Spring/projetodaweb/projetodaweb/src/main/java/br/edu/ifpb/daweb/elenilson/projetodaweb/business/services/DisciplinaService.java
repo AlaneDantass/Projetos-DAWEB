@@ -1,9 +1,12 @@
 package br.edu.ifpb.daweb.elenilson.projetodaweb.business.services;
 
 import java.util.ArrayList;
-import java.util.List; // Usar a interface List
+import java.util.List;
+import java.util.Optional;
 
-// CORREÇÃO: Importar DTOs do pacote correto
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.DisciplinaDTO;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.EstudanteDTO;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.model.entity.Disciplina;
@@ -11,24 +14,19 @@ import br.edu.ifpb.daweb.elenilson.projetodaweb.model.entity.Estudante;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.model.repository.DisciplinaRepository;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.model.repository.EstudanteRepository;
 
+@Service
 public class DisciplinaService {
-    // CORREÇÃO: Repositórios agora são injetados via construtor
+
+    @Autowired
     private DisciplinaRepository disciplinaRepository;
+    @Autowired
     private EstudanteRepository estudanteRepository;
 
-    // CORREÇÃO: Construtor para injeção de dependência
-    public DisciplinaService(DisciplinaRepository disciplinaRepository, EstudanteRepository estudanteRepository) {
-        this.disciplinaRepository = disciplinaRepository;
-        this.estudanteRepository = estudanteRepository;
-    }
-
-    /**
-     * CORREÇÃO: Retorna uma lista de todas as disciplinas como DTOs.
-     * Nome antigo: todasDisciplinas
-     */
+    // Lista todas as disciplinas em formato DTO
     public List<DisciplinaDTO> listarTodasDisciplinasDTO() {
         List<Disciplina> disciplinasEntities = disciplinaRepository.findAll();
         List<DisciplinaDTO> disciplinaDTOs = new ArrayList<>();
+
         if (disciplinasEntities == null) {
             return disciplinaDTOs;
         }
@@ -56,14 +54,18 @@ public class DisciplinaService {
         return disciplinaDTOs;
     }
 
+    // Busca disciplina por código e retorna DTO
     public DisciplinaDTO encontrarDisciplinaDTOPeloCod(int codDisciplina) {
-        Disciplina disciplinaEntity = null;//disciplinaRepository.encontraPeloCod(codDisciplina);
-        if (disciplinaEntity != null) {
+        Optional<Disciplina> disciplinaOpt = disciplinaRepository.findById((long) codDisciplina);
+
+        if (disciplinaOpt.isPresent()) {
+            Disciplina disciplinaEntity = disciplinaOpt.get();
             DisciplinaDTO disciplinaDTO = new DisciplinaDTO(
                     disciplinaEntity.getCodDisciplina(),
                     disciplinaEntity.getNomeDisciplina(),
                     disciplinaEntity.getNomeProfessor()
             );
+
             List<EstudanteDTO> estudanteDTOsMatriculados = new ArrayList<>();
             if (disciplinaEntity.getEstudanteDisciplina() != null) {
                 for (Estudante estudanteEntity : disciplinaEntity.getEstudanteDisciplina()) {
@@ -80,41 +82,54 @@ public class DisciplinaService {
         return null;
     }
 
+    // Registra uma nova disciplina
     public void registraDisciplina(int codDisciplina, String nomeDisciplina, String nomeProfessor) {
         Disciplina disciplina = new Disciplina(codDisciplina, nomeDisciplina, nomeProfessor);
-        // Certifique-se que o construtor de Disciplina faz: this.estudantes = new ArrayList<>();
         disciplinaRepository.save(disciplina);
     }
 
+    // Matricula estudante em uma disciplina
     public boolean matricularEstudante(int codDisciplina, int matriculaAluno) {
-        // Agora usa as instâncias de repositório injetadas e compartilhadas
-        Disciplina disciplina = null;//disciplinaRepository.encontraPeloCod(codDisciplina);
-        Estudante estudante = null;//estudanteRepository.encontraPelaMatricula(matriculaAluno); // Crucial!
-//        if (disciplina != null && estudante != null) {
-//            disciplinaRepository.adicionarEstudanteNaDisciplina(disciplina, estudante);
-//            return true;
-//        }
-        return false; // Falha se disciplina ou estudante não forem encontrados
-    }
+        Optional<Disciplina> disciplinaOpt = disciplinaRepository.findById((long) codDisciplina);
+        Optional<Estudante> estudanteOpt = estudanteRepository.findById((long) matriculaAluno);
 
-    public boolean removerDisciplina(int codDisciplina) {
-//        Disciplina existe = disciplinaRepository.encontraPeloCod(codDisciplina);
-//        if (existe != null) {
-//            disciplinaRepository.removerDisciplinaPeloCod(codDisciplina);
-//            // Adicional: Remover esta disciplina de qualquer estudante que a referencie (se aplicável em seu modelo)
-//            // Adicional: Remover os estudantes desta disciplina da lista de estudantes da disciplina (já feito implicitamente se o obj disciplina é removido)
-//            return true;
-//        }
+        if (disciplinaOpt.isPresent() && estudanteOpt.isPresent()) {
+            Disciplina disciplina = disciplinaOpt.get();
+            Estudante estudante = estudanteOpt.get();
+
+            disciplina.getEstudanteDisciplina().add(estudante);
+
+            disciplinaRepository.save(disciplina);
+            return true;
+        }
         return false;
     }
 
+    // Remove disciplina pelo código
+    public boolean removerDisciplina(int codDisciplina) {
+        Optional<Disciplina> disciplinaOpt = disciplinaRepository.findById((long) codDisciplina);
+
+        if (disciplinaOpt.isPresent()) {
+            Disciplina disciplina = disciplinaOpt.get();
+            disciplinaRepository.delete(disciplina);
+            return true;
+        }
+        return false;
+    }
+
+    // Atualiza disciplina existente
     public boolean atualizaDisciplina(int codAtual, String nomeAtual, String professorAtual) {
-//        Disciplina existente = disciplinaRepository.encontraPeloCod(codAtual);
-//        if (existente != null) {
-//            // O método no DisciplinaRepository já faz o loop e atualização
-//            disciplinaRepository.atualizarDisciplina(codAtual, nomeAtual, professorAtual);
-//            return true;
-//        }
+        Optional<Disciplina> existenteOpt = disciplinaRepository.findById((long) codAtual);
+
+        if (existenteOpt.isPresent()) {
+            Disciplina existente = existenteOpt.get();
+
+            existente.setNomeDisciplina(nomeAtual);
+            existente.setNomeProfessor(professorAtual);
+
+            disciplinaRepository.save(existente);
+            return true;
+        }
         return false;
     }
 }
