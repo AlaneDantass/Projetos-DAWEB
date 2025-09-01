@@ -1,19 +1,20 @@
 package br.edu.ifpb.daweb.elenilson.projetodaweb.model.entity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
-import java.util.ArrayList;
+import jakarta.persistence.ManyToMany;
 
 @Entity
 public class Disciplina {
 	@Id
-	@GeneratedValue (strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	@Column(nullable = false)
 	private int codDisciplina;
@@ -21,54 +22,72 @@ public class Disciplina {
 	private String nomeDisciplina;
 	@Column(nullable = false)
 	private String nomeProfessor;
-	private ArrayList<Estudante> estudantes;
+	@ManyToMany(fetch = FetchType.EAGER)
+	private List<Estudante> estudantes;
 
- public Disciplina(int codDisciplina, String nomeDisciplina, String nomeProfessor) {
-     this.codDisciplina = codDisciplina;
-     this.nomeDisciplina = nomeDisciplina;
-     this.nomeProfessor = nomeProfessor;
-     this.estudantes = new ArrayList();
- }
+	public Disciplina(int codDisciplina, String nomeDisciplina, String nomeProfessor) {
+		this.codDisciplina = codDisciplina;
+		this.nomeDisciplina = nomeDisciplina;
+		this.nomeProfessor = nomeProfessor;
+		this.estudantes = new ArrayList<>();
+	}
 
- public int getCodDisciplina() {
-     return this.codDisciplina;
- }
+	public Disciplina() {
+		super();
+	}
 
- public void setCodDisciplina(int codDisciplina) {
-     this.codDisciplina = codDisciplina;
- }
+	public int getCodDisciplina() {
+		return this.codDisciplina;
+	}
 
- public String getNomeDisciplina() {
-     return this.nomeDisciplina;
- }
+	public void setCodDisciplina(int codDisciplina) {
+		this.codDisciplina = codDisciplina;
+	}
 
- public void setNomeDisciplina(String nomeDisciplina) {
-     this.nomeDisciplina = nomeDisciplina;
- }
+	public String getNomeDisciplina() {
+		return this.nomeDisciplina;
+	}
 
- public String getNomeProfessor() {
-     return this.nomeProfessor;
- }
+	public void setNomeDisciplina(String nomeDisciplina) {
+		this.nomeDisciplina = nomeDisciplina;
+	}
 
- public void setNomeProfessor(String nomeProfessor) {
-     this.nomeProfessor = nomeProfessor;
- }
+	public String getNomeProfessor() {
+		return this.nomeProfessor;
+	}
 
- public String toString() {
-     return "Código da Disciplina: " + this.codDisciplina + ", Nome da Disciplina: " + this.nomeDisciplina + ", Nome do Professor: " + this.nomeProfessor;
- }
+	public void setNomeProfessor(String nomeProfessor) {
+		this.nomeProfessor = nomeProfessor;
+	}
 
- public ArrayList<Estudante> getEstudanteDisciplina() {
-     return this.estudantes;
- }
+	public String toString() {
+		return "Código da Disciplina: " + this.codDisciplina + ", Nome da Disciplina: " + this.nomeDisciplina
+				+ ", Nome do Professor: " + this.nomeProfessor;
+	}
 
- public void removerEstudante(int matricula) {
-     for(int i = 0; i < this.estudantes.size(); ++i) {
-         if (((Estudante)this.estudantes.get(i)).getMatricula() == matricula) {
-             this.estudantes.remove(i);
-             return;
-         }
-     }
+	public Long getId() {
+		return id;
+	}
 
- }
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public List<Estudante> getEstudantes() {
+		return estudantes;
+	}
+
+	public void setEstudantes(List<Estudante> estudantes) {
+		this.estudantes = estudantes;
+	}
+
+//	public void removerEstudante(int matricula) {
+//		for (int i = 0; i < this.estudantes.size(); ++i) {
+//			if (((Estudante) this.estudantes.get(i)).getMatricula() == matricula) {
+//				this.estudantes.remove(i);
+//				return;
+//			}
+//		}
+//
+//	}
 }

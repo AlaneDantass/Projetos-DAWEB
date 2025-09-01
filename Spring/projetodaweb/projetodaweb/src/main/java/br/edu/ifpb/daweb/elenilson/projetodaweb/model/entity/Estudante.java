@@ -1,11 +1,16 @@
 package br.edu.ifpb.daweb.elenilson.projetodaweb.model.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 
 @Entity
 public class Estudante {
@@ -19,18 +24,31 @@ public class Estudante {
     private String nomeEstudante;
     @Column(nullable = false)
     private String curso;
+ 
+//	private List<Disciplina> disciplinas = new ArrayList<>();
 
     public Estudante(int matricula, String nomeEstudante, String curso) {
         this.matricula = matricula;
         this.nomeEstudante = nomeEstudante;
         this.curso = curso;
     }
-
+//    public List<Disciplina> getDisciplinaEstudante() {
+//        return this.disciplinas;
+//    }
+    
+    
+    
     public int getMatricula() {
         return matricula;
     }
 
-    public void setMatricula(int matricula) {
+    public Estudante() {
+		super();
+	}
+
+
+
+	public void setMatricula(int matricula) {
         this.matricula = matricula;
     }
 

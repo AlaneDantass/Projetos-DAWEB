@@ -1,17 +1,19 @@
 package br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto;
 
 
+import java.util.ArrayList;
+
 //Data Transfer Object (DTO) ou simplesmente Transfer Object é um padrão de projetos bastante usado em Java para o transporte de dados entre diferentes componentes de um sistema, diferentes instâncias ou processos de um sistema distribuído ou diferentes sistemas via serialização.
 //A ideia consiste basicamente em agrupar um conjunto de atributos numa classe simples de forma a otimizar a comunicação.
 
 import java.util.List;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
-import java.util.ArrayList;
+import jakarta.persistence.ManyToMany;
 
 
 public class DisciplinaDTO {

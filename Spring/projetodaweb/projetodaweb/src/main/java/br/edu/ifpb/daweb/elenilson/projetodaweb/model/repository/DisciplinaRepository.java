@@ -10,6 +10,7 @@ import br.edu.ifpb.daweb.elenilson.projetodaweb.model.entity.Disciplina;
 public interface DisciplinaRepository extends JpaRepository<Disciplina, Long>{
 	List <Disciplina> findByNomeDisciplina(String nomeDisciplina);
 	List <Disciplina> findByNomeProfessor(String nomeProfessor);
+	Disciplina findByCodDisciplina(int codDisciplina);
 	
 }
 

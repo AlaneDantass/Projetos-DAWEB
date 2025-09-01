@@ -39,8 +39,8 @@ public class DisciplinaService {
             );
 
             List<EstudanteDTO> estudanteDTOsMatriculados = new ArrayList<>();
-            if (disciplinaEntity.getEstudanteDisciplina() != null) {
-                for (Estudante estudanteEntity : disciplinaEntity.getEstudanteDisciplina()) {
+            if (disciplinaEntity.getEstudantes() != null) {
+                for (Estudante estudanteEntity : disciplinaEntity.getEstudantes()) {
                     estudanteDTOsMatriculados.add(new EstudanteDTO(
                             estudanteEntity.getMatricula(),
                             estudanteEntity.getNomeEstudante(),
@@ -67,8 +67,8 @@ public class DisciplinaService {
             );
 
             List<EstudanteDTO> estudanteDTOsMatriculados = new ArrayList<>();
-            if (disciplinaEntity.getEstudanteDisciplina() != null) {
-                for (Estudante estudanteEntity : disciplinaEntity.getEstudanteDisciplina()) {
+            if (disciplinaEntity.getEstudantes() != null) {
+                for (Estudante estudanteEntity : disciplinaEntity.getEstudantes()) {
                     estudanteDTOsMatriculados.add(new EstudanteDTO(
                             estudanteEntity.getMatricula(),
                             estudanteEntity.getNomeEstudante(),
@@ -90,16 +90,18 @@ public class DisciplinaService {
 
     // Matricula estudante em uma disciplina
     public boolean matricularEstudante(int codDisciplina, int matriculaAluno) {
-        Optional<Disciplina> disciplinaOpt = disciplinaRepository.findById((long) codDisciplina);
-        Optional<Estudante> estudanteOpt = estudanteRepository.findById((long) matriculaAluno);
+        Disciplina disciplina = disciplinaRepository.findByCodDisciplina(codDisciplina);
+        Optional<Estudante> estudanteOpt = estudanteRepository.findByMatricula( matriculaAluno);
 
-        if (disciplinaOpt.isPresent() && estudanteOpt.isPresent()) {
-            Disciplina disciplina = disciplinaOpt.get();
+        if (disciplina != null && estudanteOpt.isPresent()) {
             Estudante estudante = estudanteOpt.get();
 
-            disciplina.getEstudanteDisciplina().add(estudante);
+            disciplina.getEstudantes().add(estudante);
+            //estudante.getDisciplinaEstudante().add(disciplina);
+       
 
             disciplinaRepository.save(disciplina);
+//            estudanteRepository.save(estudante);
             return true;
         }
         return false;
