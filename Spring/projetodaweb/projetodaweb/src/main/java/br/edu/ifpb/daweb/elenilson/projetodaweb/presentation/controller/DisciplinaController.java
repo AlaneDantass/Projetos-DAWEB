@@ -33,7 +33,7 @@ public class DisciplinaController {
 
     public boolean inserirEstudanteNaDisciplina(int codDisciplina, int matriculaAluno) {
         return disciplinaService.matricularEstudante(codDisciplina, matriculaAluno);
-    }
+    } 
 
     /**
      * CORREÇÃO: Retorna uma lista de todas as disciplinas como DTOs.
