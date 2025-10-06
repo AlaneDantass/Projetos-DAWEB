@@ -1,69 +1,70 @@
 package br.edu.ifpb.daweb.elenilson.projetodaweb.presentation.controller;
 
-import java.util.List; // Usar a interface List
-
-
-// CORREÇÃO: Importar DTOs do pacote correto
-import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.DisciplinaDTO;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.DisciplinaDTO;
+import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.request.DisciplinaRequestDTO;
+import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.response.DisciplinaResponseDTO;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.DisciplinaService;
-import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.Printer;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.Validation;
 
-@Controller
+@RestController
+@RequestMapping(value = "/api/v1/disciplinas") // ← endpoint base da API de disciplinas
 public class DisciplinaController {
-    // CORREÇÃO: Serviço agora é injetado via construtor
-	@Autowired
-    private DisciplinaService disciplinaService;
+
     @Autowired
-    private Validation disciplinaValidacao; //Alteração do new
+    private DisciplinaService disciplinaService;
 
-    // CORREÇÃO: Construtor para injeção de dependência
-    public DisciplinaController(DisciplinaService disciplinaService) {
-        this.disciplinaService = disciplinaService;
-    }
+    @Autowired
+    private Validation disciplinaValidacao;
 
-    public void cadastrarDisciplina(int codDisciplina, String nomeDisciplina, String nomeProfessor) {
-        if (disciplinaValidacao.disciplinaValida(codDisciplina, nomeDisciplina, nomeProfessor)) {
-            disciplinaService.registraDisciplina(codDisciplina, nomeDisciplina, nomeProfessor);
+    // Cadastrar nova disciplina (POST)
+    @PostMapping
+    public DisciplinaResponseDTO cadastrarDisciplina(@RequestBody DisciplinaRequestDTO dto) {
+        if (disciplinaValidacao.disciplinaValida(dto.getCodigo(), dto.getNome(), dto.getProfessor())) {
+            disciplinaService.registraDisciplina(dto.getCodigo(), dto.getNome(), dto.getProfessor());
+            return new DisciplinaResponseDTO(dto.getCodigo(), dto.getNome(), dto.getProfessor());
         }
+        return null;
     }
+    
+ //  Matricular estudante em disciplina existente
+    @PostMapping("/{codigoDisciplina}/matricular/{matriculaEstudante}")
+    public boolean matricularEstudante(
+            @PathVariable int codigoDisciplina,
+            @PathVariable int matriculaEstudante) {
 
-    public boolean inserirEstudanteNaDisciplina(int codDisciplina, int matriculaAluno) {
-        return disciplinaService.matricularEstudante(codDisciplina, matriculaAluno);
-    } 
-
-    /**
-     * CORREÇÃO: Retorna uma lista de todas as disciplinas como DTOs.
-     * Nome antigo: listarDisciplinas (que era void)
-     */
-//    public void listarDisciplinas(){
-//    	 List<DisciplinaDTO> lista = disciplinaService.listarTodasDisciplinasDTO();
-//
-//        if (lista.isEmpty()) {
-//            Printer.print("Nenhuma disciplina cadastrada.");
-//        } else {
-//            for (DisciplinaDTO d : lista) {
-//                Printer.print("\n-" + d.getNomeDisciplina());
-//            }
-//        }
-//    }
-
+        return disciplinaService.matricularEstudante(codigoDisciplina, matriculaEstudante);
+    }
+ // ✅ Listar todas as disciplinas (GET)
+    @GetMapping
     public List<DisciplinaDTO> getTodasDisciplinasComEstudantesDTO() {
         return disciplinaService.listarTodasDisciplinasDTO();
     }
 
-    public boolean atualizaDisciplina(int codAtual, String nomeAtual, String professorAtual) {
-        if (disciplinaValidacao.disciplinaValida(codAtual, nomeAtual, professorAtual)) {
-            return disciplinaService.atualizaDisciplina(codAtual, nomeAtual, professorAtual);
-        } else {
-            return false;
-        }
-    }
+    @PutMapping("/{codigo}")
+    public boolean atualizarDisciplina(
+            @PathVariable int codigo,
+            @RequestBody DisciplinaRequestDTO dto) {
 
-    public boolean removerDisciplina(int codDisciplina) {
-        return disciplinaService.removerDisciplina(codDisciplina);
+        if (disciplinaValidacao.disciplinaValida(dto.getCodigo(), dto.getNome(), dto.getProfessor())) {
+            return disciplinaService.atualizaDisciplina(codigo, dto.getNome(), dto.getProfessor());
+        }
+        return false;
+   
+    }
+    @DeleteMapping("/{codigo}")
+    public boolean removerDisciplina(@PathVariable int codigo) {
+        return disciplinaService.removerDisciplina(codigo);
     }
 }
