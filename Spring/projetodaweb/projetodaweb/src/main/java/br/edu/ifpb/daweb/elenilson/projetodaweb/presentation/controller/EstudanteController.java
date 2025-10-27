@@ -3,6 +3,8 @@ package br.edu.ifpb.daweb.elenilson.projetodaweb.presentation.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.EstudanteDTO;
@@ -12,7 +14,7 @@ import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.EstudanteServi
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.Validation;
 
 @RestController
-@RequestMapping(value = "/api/v1/estudantes") // ← endpoint base da API de estudantes
+@RequestMapping("/api/v1/estudantes")
 public class EstudanteController {
 
     @Autowired
@@ -21,41 +23,69 @@ public class EstudanteController {
     @Autowired
     private EstudanteService estudanteService;
 
-    // ✅ Cadastrar novo estudante (POST)
+
     @PostMapping
-    public EstudanteResponseDTO cadastrarEstudante(@RequestBody EstudanteRequestDTO dto) {
-        if (validation.estudanteValido(dto.getMatricula(), dto.getNome(), dto.getCurso())) {
-            estudanteService.cadastrarEstudante(dto.getMatricula(), dto.getNome(), dto.getCurso());
-            return new EstudanteResponseDTO(dto.getMatricula(), dto.getNome(), dto.getCurso());
+    public ResponseEntity<?> cadastrarEstudante(@RequestBody EstudanteRequestDTO dto) {
+        if (!validation.estudanteValido(dto.getMatricula(), dto.getNome(), dto.getCurso())) {
+            return ResponseEntity.badRequest().body("Dados inválidos para cadastrar estudante.");
         }
-        return null;
+
+        estudanteService.cadastrarEstudante(dto.getMatricula(), dto.getNome(), dto.getCurso());
+        EstudanteResponseDTO response = new EstudanteResponseDTO(dto.getMatricula(), dto.getNome(), dto.getCurso());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // ✅ Listar todos os estudantes (GET)
+
     @GetMapping
-    public List<EstudanteDTO> getTodosEstudantesDTO() {
-        return estudanteService.listarTodosEstudantesDTO();
+    public ResponseEntity<List<EstudanteDTO>> listarEstudantes() {
+        List<EstudanteDTO> lista = estudanteService.listarTodosEstudantesDTO();
+        if (lista.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204
+        }
+        return ResponseEntity.ok(lista); // 200
     }
 
-    // ✅ Buscar estudante por matrícula (GET)
+
     @GetMapping("/{matricula}")
-    public EstudanteDTO getEstudanteDTOPorMatricula(@PathVariable int matricula) {
-        return estudanteService.encontrarEstudanteDTOPelaMatricula(matricula);
-    }
-
-    // ✅ Atualizar estudante (PUT)
-    @PutMapping("/{matricula}")
-    public boolean atualizaEstudante(@PathVariable int matricula, @RequestBody EstudanteRequestDTO dto) {
-        if (validation.estudanteValido(matricula, dto.getNome(), dto.getCurso())) {
-            return estudanteService.atualizaEstudante(matricula, dto.getNome(), dto.getCurso());
+    public ResponseEntity<?> buscarEstudantePorMatricula(@PathVariable int matricula) {
+        EstudanteDTO estudante = estudanteService.encontrarEstudanteDTOPelaMatricula(matricula);
+        if (estudante != null) {
+            return ResponseEntity.ok(estudante);
         } else {
-            return false;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Estudante não encontrado.");
         }
     }
 
-    // ✅ Remover estudante (DELETE)
+
+    @PutMapping("/{matricula}")
+    public ResponseEntity<?> atualizarEstudante(
+            @PathVariable int matricula,
+            @RequestBody EstudanteRequestDTO dto) {
+
+        if (!validation.estudanteValido(matricula, dto.getNome(), dto.getCurso())) {
+            return ResponseEntity.badRequest().body("Dados inválidos para atualização.");
+        }
+
+        boolean atualizado = estudanteService.atualizaEstudante(matricula, dto.getNome(), dto.getCurso());
+        if (atualizado) {
+            EstudanteResponseDTO response = new EstudanteResponseDTO(matricula, dto.getNome(), dto.getCurso());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Estudante não encontrado para atualização.");
+        }
+    }
+
+
     @DeleteMapping("/{matricula}")
-    public boolean removerEstudante(@PathVariable int matricula) {
-        return estudanteService.removerEstudante(matricula);
+    public ResponseEntity<?> removerEstudante(@PathVariable int matricula) {
+        boolean removido = estudanteService.removerEstudante(matricula);
+        if (removido) {
+            return ResponseEntity.noContent().build(); // 204
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Estudante não encontrado para exclusão.");
+        }
     }
 }

@@ -3,14 +3,9 @@ package br.edu.ifpb.daweb.elenilson.projetodaweb.presentation.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.DisciplinaDTO;
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.dto.request.DisciplinaRequestDTO;
@@ -19,7 +14,7 @@ import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.DisciplinaServ
 import br.edu.ifpb.daweb.elenilson.projetodaweb.business.services.Validation;
 
 @RestController
-@RequestMapping(value = "/api/v1/disciplinas") // ← endpoint base da API de disciplinas
+@RequestMapping("/api/v1/disciplinas")
 public class DisciplinaController {
 
     @Autowired
@@ -28,43 +23,73 @@ public class DisciplinaController {
     @Autowired
     private Validation disciplinaValidacao;
 
-    // Cadastrar nova disciplina (POST)
+
     @PostMapping
-    public DisciplinaResponseDTO cadastrarDisciplina(@RequestBody DisciplinaRequestDTO dto) {
-        if (disciplinaValidacao.disciplinaValida(dto.getCodigo(), dto.getNome(), dto.getProfessor())) {
-            disciplinaService.registraDisciplina(dto.getCodigo(), dto.getNome(), dto.getProfessor());
-            return new DisciplinaResponseDTO(dto.getCodigo(), dto.getNome(), dto.getProfessor());
+    public ResponseEntity<?> cadastrarDisciplina(@RequestBody DisciplinaRequestDTO dto) {
+        if (!disciplinaValidacao.disciplinaValida(dto.getCodigo(), dto.getNome(), dto.getProfessor())) {
+            return ResponseEntity.badRequest().body("Dados inválidos para cadastrar disciplina.");
         }
-        return null;
+
+        disciplinaService.registraDisciplina(dto.getCodigo(), dto.getNome(), dto.getProfessor());
+        DisciplinaResponseDTO response = new DisciplinaResponseDTO(dto.getCodigo(), dto.getNome(), dto.getProfessor());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    
- //  Matricular estudante em disciplina existente
+
+
     @PostMapping("/{codigoDisciplina}/matricular/{matriculaEstudante}")
-    public boolean matricularEstudante(
+    public ResponseEntity<?> matricularEstudante(
             @PathVariable int codigoDisciplina,
             @PathVariable int matriculaEstudante) {
 
-        return disciplinaService.matricularEstudante(codigoDisciplina, matriculaEstudante);
-    }
- // ✅ Listar todas as disciplinas (GET)
-    @GetMapping
-    public List<DisciplinaDTO> getTodasDisciplinasComEstudantesDTO() {
-        return disciplinaService.listarTodasDisciplinasDTO();
+        boolean matriculado = disciplinaService.matricularEstudante(codigoDisciplina, matriculaEstudante);
+        if (matriculado) {
+            return ResponseEntity.ok("Estudante matriculado com sucesso na disciplina " + codigoDisciplina);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Falha ao matricular estudante. Verifique se os dados são válidos.");
+        }
     }
 
+
+    @GetMapping
+    public ResponseEntity<List<DisciplinaDTO>> listarDisciplinas() {
+        List<DisciplinaDTO> lista = disciplinaService.listarTodasDisciplinasDTO();
+        if (lista.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204
+        }
+        return ResponseEntity.ok(lista); // 200
+    }
+
+
     @PutMapping("/{codigo}")
-    public boolean atualizarDisciplina(
+    public ResponseEntity<?> atualizarDisciplina(
             @PathVariable int codigo,
             @RequestBody DisciplinaRequestDTO dto) {
 
-        if (disciplinaValidacao.disciplinaValida(dto.getCodigo(), dto.getNome(), dto.getProfessor())) {
-            return disciplinaService.atualizaDisciplina(codigo, dto.getNome(), dto.getProfessor());
+        if (!disciplinaValidacao.disciplinaValida(dto.getCodigo(), dto.getNome(), dto.getProfessor())) {
+            return ResponseEntity.badRequest().body("Dados inválidos para atualização da disciplina.");
         }
-        return false;
-   
+
+        boolean atualizada = disciplinaService.atualizaDisciplina(codigo, dto.getNome(), dto.getProfessor());
+        if (atualizada) {
+            DisciplinaResponseDTO response = new DisciplinaResponseDTO(codigo, dto.getNome(), dto.getProfessor());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Disciplina não encontrada para atualização.");
+        }
     }
+
+
     @DeleteMapping("/{codigo}")
-    public boolean removerDisciplina(@PathVariable int codigo) {
-        return disciplinaService.removerDisciplina(codigo);
+    public ResponseEntity<?> removerDisciplina(@PathVariable int codigo) {
+        boolean removida = disciplinaService.removerDisciplina(codigo);
+        if (removida) {
+            return ResponseEntity.noContent().build(); // 204
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Disciplina não encontrada para exclusão.");
+        }
     }
+    
 }

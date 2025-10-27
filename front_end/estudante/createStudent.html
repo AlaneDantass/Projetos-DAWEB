@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar Estudante</title>
+  <link rel="stylesheet" href="student.css">
+</head>
+<body>
+  <h1>Cadastrar Estudante</h1>
+
+  <form id="formEstudante">
+    <label for="nome">Nome do Estudante:</label>
+    <input type="text" id="nome" required>
+
+    <label for="matricula">Matrícula:</label>
+    <input type="text" id="matricula" required>
+
+    <label for="curso">Nome do Curso:</label>
+    <input type="text" id="curso" required>
+
+    <label for="ano">Ano do Curso:</label>
+    <select id="ano" required>
+      <option value="">Selecione</option>
+      <option value="1º Ano">1º Ano</option>
+      <option value="2º Ano">2º Ano</option>
+      <option value="3º Ano">3º Ano</option>
+      <option value="4º Ano">4º Ano</option>
+    </select>
+
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <pre id="resposta"></pre>
+
+  <script src="student.js"></script>
+</body>
+</html>

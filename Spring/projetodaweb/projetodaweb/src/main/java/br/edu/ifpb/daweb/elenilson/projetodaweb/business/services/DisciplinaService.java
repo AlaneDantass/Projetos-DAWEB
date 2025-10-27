@@ -83,10 +83,12 @@ public class DisciplinaService {
     }
 
     // Registra uma nova disciplina
-    public void registraDisciplina(int codDisciplina, String nomeDisciplina, String nomeProfessor) {
-        Disciplina disciplina = new Disciplina(codDisciplina, nomeDisciplina, nomeProfessor);
+
+	public DisciplinaDTO registraDisciplina(int codDisciplina, String nomeDisciplina, String nomeProfessor) {
+		Disciplina disciplina = new Disciplina(codDisciplina, nomeDisciplina, nomeProfessor);
         disciplinaRepository.save(disciplina);
-    }
+		return null;
+	}
 
     // Matricula estudante em uma disciplina
     public boolean matricularEstudante(int codDisciplina, int matriculaAluno) {
@@ -107,12 +109,13 @@ public class DisciplinaService {
         return false;
     }
 
-    // Remove disciplina pelo código
+    
     public boolean removerDisciplina(int codDisciplina) {
-        Optional<Disciplina> disciplinaOpt = disciplinaRepository.findById((long) codDisciplina);
+        Disciplina disciplina = disciplinaRepository.findByCodDisciplina(codDisciplina);
 
-        if (disciplinaOpt.isPresent()) {
-            Disciplina disciplina = disciplinaOpt.get();
+        if (disciplina != null) {
+            // Se houver estudantes matriculados, pode ser necessário removê-los antes
+            disciplina.getEstudantes().clear();
             disciplinaRepository.delete(disciplina);
             return true;
         }
@@ -134,4 +137,11 @@ public class DisciplinaService {
         }
         return false;
     }
+
+	public DisciplinaDTO atualizaDisciplina(int codigo, DisciplinaDTO dto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }

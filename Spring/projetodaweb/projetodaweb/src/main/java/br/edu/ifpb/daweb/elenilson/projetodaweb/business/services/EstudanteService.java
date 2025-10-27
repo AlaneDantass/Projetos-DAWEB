@@ -70,31 +70,35 @@ public class EstudanteService {
         estudanteRepository.save(estudante);
     }
 
-    public boolean atualizaEstudante(int matricula, String novoNome, String novoCurso) {
-    	Optional<Estudante> updateOpt = estudanteRepository.findByMatricula(matricula);
-    	if (updateOpt.isPresent()) {
-    		Estudante updateEstudante = updateOpt.get();
-    		updateEstudante.setCurso(novoCurso);
-    		updateEstudante.setNomeEstudante(novoCurso);
-    		
-    		estudanteRepository.save(updateEstudante);
-    		return true;// estudanteRepository. (matricula, novoNome, novoCurso);
-    	}
-        // A lógica de atualização (incluindo a verificação de existência)
-        // agora está corretamente no repositório (com a correção do NPE)
-    	return false;
-    }
-    
+    public boolean atualizaEstudante(int matricula, String nome, String curso) {
+        Optional<Estudante> optEstudante = estudanteRepository.findByMatricula(matricula);
 
+        if (optEstudante.isPresent()) {
+            Estudante estudante = optEstudante.get();
+            estudante.setNomeEstudante(nome);
+            estudante.setCurso(curso);
+            estudanteRepository.save(estudante);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    
     public boolean removerEstudante(int matricula) {
-          Optional<Estudante> existenteOpt = estudanteRepository.findByMatricula(matricula);
-          if (existenteOpt.isPresent()) {
-        	  Estudante estudanteEntity = existenteOpt.get();
-              estudanteRepository.delete(estudanteEntity);
-            // Esta linha agora usa o disciplinaRepository injetado e compartilhado
-//            disciplinaRepository.deletarEstudantePelaMatricula(matricula);
-//            return true;
-          }
+        Optional<Estudante> existenteOpt = estudanteRepository.findByMatricula(matricula);
+        if (existenteOpt.isPresent()) {
+            Estudante estudanteEntity = existenteOpt.get();
+            
+            estudanteRepository.save(estudanteEntity);
+
+            // Deleta o estudante
+            estudanteRepository.delete(estudanteEntity);
+
+            return true; // <-- importante
+        }
         return false;
     }
+    
+    
 }
