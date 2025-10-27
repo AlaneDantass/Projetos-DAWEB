@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cadastrar Disciplina</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function salvar() {
+            alert("Disciplina salva com sucesso!");
+        }
+    </script>
+</head>
+<body>
+    <h1>Cadastrar Disciplina</h1>
+    <form onsubmit="salvar(); return false;">
+        Código:
+        <input type="text" placeholder="Ex: BD101">
+
+        Nome da Disciplina:
+        <input type="text" placeholder="Ex: Banco de Dados">
+
+        Nome do Professor:
+        <input type="text" placeholder="Ex: Maria Souza">
+
+        <button type="submit">Salvar</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cadastrar Estudante</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function salvar() {
+            alert("Estudante salvo com sucesso!");
+        }
+    </script>
+</head>
+<body>
+    <h1>Cadastrar Estudante</h1>
+    <form onsubmit="salvar(); return false;">
+        Matrícula:
+        <input type="number" placeholder="Ex: 2024001">
+
+        Nome:
+        <input type="text" placeholder="Ex: João Silva">
+        Curso:
+        <input type="text" placeholder="Ex: Informática">
+        Série:
+        <select>
+            <option>1ª</option>
+            <option>2ª</option>
+            <option>3ª</option>
+            <option>4ª</option>
+        </select>
+
+        <button type="submit">Salvar</button>
+    </form>
+</body>
+</html>
